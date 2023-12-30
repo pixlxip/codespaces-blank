@@ -1,0 +1,19 @@
+so...
+server->client communication
+i can recursivel talk with await... but that might be slow
+ill try it though:
+the person makes a request and the server responds with stuff
+then, the person sets a username and send to server.
+server reponds with a success code.
+client replys again with success.
+server responds when there are two players and randomly picks somebody to start.
+each player resieves a colour
+if they are white, they can choose a piece to move
+that is sent to the server
+server checks if move is valid
+if it isn't, error code and it awaits the person again
+if it is valid, success code is sent to both players.
+next player goes and sends request
+afeter a turn, checkmate is checked
+if it is chekmate, game ends
+if it is stalemate, game ends
