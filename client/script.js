@@ -124,7 +124,7 @@ const rbqMoves = (a, b, list, compare, hb, pos) => {
       if (hb[a + (j * pos[i][0])][b + (j * pos[i][1])] == NP) {
         list.push([a + (j * pos[i][0]), b + (j * pos[i][1])]);
       } else if (compare.includes(hb[a + (j * pos[i][0])][b + (j * pos[i][1])])) {
-        log(hb[a + (j * pos[i][0])][b + (j * pos[i][1])])
+        log(hb[a + (j * pos[i][0])][b + (j * pos[i][1])]);
         list.push([a + (j * pos[i][0]), b + (j * pos[i][1])]);
         break;
       } else break;
