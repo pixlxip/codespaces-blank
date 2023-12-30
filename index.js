@@ -24,11 +24,11 @@ app.get(`/favicon.ico`, (req, res) => {
   res.sendFile(path.join(__dirname, `client/favicon.ico`));
 });
 
-app.post('/post', (req, res) => {
+app.post(`/post`, (req, res) => {
   let data = req.body;
   console.log(data.message);
   console.log(req.socket.remoteAddress)
-  res.status(200).json({ message: 'Data Received: ' + JSON.stringify(data) });
+  res.status(200).json({ message: `Data Received: ` + JSON.stringify(data) });
 })
 
 app.listen(port, () => {
