@@ -26,6 +26,11 @@ const horiW = [WR, WQ];
 const diagB = [BB, BQ];
 const horiB = [BR, BQ];
 
+let highlighting = {
+  a: undefined,
+  b: undefined,
+};
+
 const isW = (p) => {
   return [WP, WR, WN, WB, WQ, WK].includes(p);
 }
@@ -200,8 +205,17 @@ const clearHighlightedSpaces = () => {
 }
 
 const cellClick = (event) => {
+  const a = +(event.target.a);
+  const b = +(event.target.b);
   clearHighlightedSpaces();
-  highlightSpaces(possibleMoves(+(event.target.a), +(event.target.b)))
+  if (highlighting.a != a || highlighting.b != b) {
+    highlightSpaces(possibleMoves(a, b));
+    highlighting.a = a;
+    highlighting.b = b;
+  } else {
+    highlighting.a = undefined;
+    highlighting.b = undefined;
+  }
 };
 
 for ( let i = (side == `white` ? 0 : 7); ((side == `white`) ? (i < 8) : (i > -1)); i += (side == `white` ? 1 : -1) ) {
