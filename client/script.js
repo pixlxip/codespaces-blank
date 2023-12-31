@@ -71,7 +71,7 @@ const bishopRelativePositions = [
   [-1, -1]
 ];
 
-const queenRelativePositions = [...rookPos, ...bishopPos];
+const queenRelativePositions = [...rookRelativePositions, ...bishopRelativePositions];
 
 const kingRelativePositions = [
   [1, 0],
