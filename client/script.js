@@ -103,10 +103,10 @@ const knMoves = (a, b, list, compare, hb, pos) => {
   log(compare);
   for (let i = 0; i < pos.length; i++) {
     if (
-        a + pos[i][0] >= hb.length ||
-        a + pos[i][0] < 0 ||
-        b + pos[i][1] >= hb[0].length ||
-        b + pos[i][1] < 0) continue;
+      a + pos[i][0] >= hb.length ||
+      a + pos[i][0] < 0 ||
+      b + pos[i][1] >= hb[0].length ||
+      b + pos[i][1] < 0) continue;
     if (compare.includes(hb[a + pos[i][0]][b + pos[i][1]])) {
       list.push([a + pos[i][0], b + pos[i][1]]);
     }
@@ -194,14 +194,12 @@ const cellClick = (e) => {
   const b = +(e.target.b);
   const test = possibleMoves(a, b);
 
-  for (let i = 0; i < board.length; i++) {
-    for (let j = 0; j < board[0].length; j++) {
-      document.querySelectorAll(`.cr${i}.cc${j}`)[0].style = `background-color: #00000000;`;
-    }
-  }
+  while (document.querySelectorAll(`.highlighted`).length)
+    document.querySelectorAll(`.highlighted`)[0].classList.remove(`highlighted`);
 
   for (let i = 0; i < test.length; i++) {
-    document.querySelectorAll(`.cr${test[i][0]}.cc${test[i][1]}`)[0].style = `background-color: yellow;`;
+    document.querySelectorAll(`.cr${test[i][0]}.cc${test[i][1]}`)[0].classList.add(`highlighted`)
+    log(document.querySelectorAll(`.cr${test[i][0]}.cc${test[i][1]}`)[0]);
   }
 };
 

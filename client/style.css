@@ -25,6 +25,10 @@ body {
   border-radius: 10pt;
 }
 
+.highlighted {
+  background-color: #808080A0;
+}
+
 .cellhover:hover {
   background-color: #80808080;
 }
