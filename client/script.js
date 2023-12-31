@@ -189,18 +189,19 @@ const possibleMoves = (a, b) => {
   return moves;
 };
 
-const cellClick = (e) => {
-  const a = +(e.target.a);
-  const b = +(e.target.b);
-  const test = possibleMoves(a, b);
+const highlightSpaces = (spaces) => {
+  for (let i = 0; i < spaces.length; i++) 
+    document.querySelectorAll(`.cr${spaces[i][0]}.cc${spaces[i][1]}`)[0].classList.add(`highlighted`);
+}
 
+const clearHighlightedSpaces = () => {
   while (document.querySelectorAll(`.highlighted`).length)
     document.querySelectorAll(`.highlighted`)[0].classList.remove(`highlighted`);
+}
 
-  for (let i = 0; i < test.length; i++) {
-    document.querySelectorAll(`.cr${test[i][0]}.cc${test[i][1]}`)[0].classList.add(`highlighted`)
-    log(document.querySelectorAll(`.cr${test[i][0]}.cc${test[i][1]}`)[0]);
-  }
+const cellClick = (event) => {
+  clearHighlightedSpaces();
+  highlightSpaces(possibleMoves(+(event.target.a), +(event.target.b)))
 };
 
 for ( let i = (side == `white` ? 0 : 7); ((side == `white`) ? (i < 8) : (i > -1)); i += (side == `white` ? 1 : -1) ) {
