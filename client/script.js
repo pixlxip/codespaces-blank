@@ -40,10 +40,10 @@ const isB = (p) => {
 }
 
 const moved = (p, t) => {
-  const hb = board.slice();
-  hb[t[0]][t[1]] = hb[p[0]][p[1]];
-  hb[p[0]][p[1]] = NP;
-  return hb;
+  const hypotheticalBoard = board.slice();
+  hypotheticalBoard[t[0]][t[1]] = hypotheticalBoard[p[0]][p[1]];
+  hypotheticalBoard[p[0]][p[1]] = NP;
+  return hypotheticalBoard;
 }
 
 const knightRelativePositions = [
@@ -84,52 +84,52 @@ const kingRelativePositions = [
   [-1, -1]
 ];
 
-const pawnMoves = (a, b, list, compare, hb, player) => {
+const pawnMoves = (a, b, list, compare, hypotheticalBoard, player) => {
   if (player ? (
     a == 6 &&
-    hb[a - 1][b] == NP &&
-    hb[a - 2][b] == NP
+    hypotheticalBoard[a - 1][b] == NP &&
+    hypotheticalBoard[a - 2][b] == NP
   ) : (
     a == 1 &&
-    hb[a + 1][b] == NP &&
-    hb[a + 2][b] == NP
+    hypotheticalBoard[a + 1][b] == NP &&
+    hypotheticalBoard[a + 2][b] == NP
   )) {
     list.push(player ? [a - 1, b] : [a + 1, b]);
     list.push(player ? [a - 2, b] : [a + 2, b]);
-  } else if (player ? (hb[a - 1][b] == NP) : (hb[a + 1][b] == NP))
+  } else if (player ? (hypotheticalBoard[a - 1][b] == NP) : (hypotheticalBoard[a + 1][b] == NP))
     list.push(player ? [a - 1, b] : [a + 1, b]);
-  if (compare.includes(player ? hb[a - 1][b - 1] : hb[a + 1][b - 1]))
+  if (compare.includes(player ? hypotheticalBoard[a - 1][b - 1] : hypotheticalBoard[a + 1][b - 1]))
     list.push(player ? [a - 1, b - 1] : [a + 1, b - 1]);
-  if (compare.includes(player ? hb[a - 1][b + 1] : hb[a + 1][b + 1]))
+  if (compare.includes(player ? hypotheticalBoard[a - 1][b + 1] : hypotheticalBoard[a + 1][b + 1]))
     list.push(player ? [a - 1, b + 1] : [a + 1, b + 1]);
 }
 
-const knMoves = (a, b, list, compare, hb, pos) => {
+const knMoves = (a, b, list, compare, hypotheticalBoard, pos) => {
   log(compare);
   for (let i = 0; i < pos.length; i++) {
     if (
-      a + pos[i][0] >= hb.length ||
+      a + pos[i][0] >= hypotheticalBoard.length ||
       a + pos[i][0] < 0 ||
-      b + pos[i][1] >= hb[0].length ||
+      b + pos[i][1] >= hypotheticalBoard[0].length ||
       b + pos[i][1] < 0) continue;
-    if (compare.includes(hb[a + pos[i][0]][b + pos[i][1]])) {
+    if (compare.includes(hypotheticalBoard[a + pos[i][0]][b + pos[i][1]])) {
       list.push([a + pos[i][0], b + pos[i][1]]);
     }
   }
 }
 
-const rbqMoves = (a, b, list, compare, hb, pos) => {
+const rbqMoves = (a, b, list, compare, hypotheticalBoard, pos) => {
   for (let i = 0; i < pos.length; i++) {
     for (let j = 1; (
       a + (j * pos[i][0]) >= 0 && 
-      a + (j * pos[i][0]) < hb.length && 
+      a + (j * pos[i][0]) < hypotheticalBoard.length && 
       b + (j * pos[i][1]) >= 0 && 
-      b + (j * pos[i][1]) < hb[0].length
+      b + (j * pos[i][1]) < hypotheticalBoard[0].length
     ); j++) {
-      if (hb[a + (j * pos[i][0])][b + (j * pos[i][1])] == NP) {
+      if (hypotheticalBoard[a + (j * pos[i][0])][b + (j * pos[i][1])] == NP) {
         list.push([a + (j * pos[i][0]), b + (j * pos[i][1])]);
-      } else if (compare.includes(hb[a + (j * pos[i][0])][b + (j * pos[i][1])])) {
-        log(hb[a + (j * pos[i][0])][b + (j * pos[i][1])]);
+      } else if (compare.includes(hypotheticalBoard[a + (j * pos[i][0])][b + (j * pos[i][1])])) {
+        log(hypotheticalBoard[a + (j * pos[i][0])][b + (j * pos[i][1])]);
         list.push([a + (j * pos[i][0]), b + (j * pos[i][1])]);
         break;
       } else break;
@@ -137,22 +137,22 @@ const rbqMoves = (a, b, list, compare, hb, pos) => {
   }
 };
 
-const c4c = (p, hb) => {
+const c4c = (p, hypotheticalBoard) => {
   
   return false;
 }
 
-const writePiece = (a, b, p) => {
-  board[a][b] = p;
-  document.querySelectorAll(`.cr${a}.cc${b}`)[0].innerText = p;
+const writePiece = (a, b, piece) => {
+  board[a][b] = piece;
+  document.querySelectorAll(`.cr${a}.cc${b}`)[0].innerText = piece;
 }
 
 const possibleMoves = (a, b) => {
-  const tp = board[a][b];
-  if (tp == NP) return [];
+  const targetPiece = board[a][b];
+  if (targetPiece == NP) return [];
   const moves = [];
   
-  switch (tp) {
+  switch (targetPiece) {
     case WP:
       pawnMoves(a, b, moves, blacks, board, true);
       break;
@@ -190,16 +190,16 @@ const possibleMoves = (a, b) => {
       knMoves(a, b, moves, [...whites, NP], board, kingRelativePositions);
       break;
   }
-  //moves.filter((move) => c4c(whites.includes(tp), moved([a, b], move)));
+  //moves.filter((move) => c4c(whites.includes(targetPiece), moved([a, b], move)));
   return moves;
 };
 
-const highlightSpaces = (spaces) => {
-  for (let i = 0; i < spaces.length; i++) 
-    document.querySelectorAll(`.cr${spaces[i][0]}.cc${spaces[i][1]}`)[0].classList.add(`highlighted`);
+const highlightCells = (cells) => {
+  for (let i = 0; i < cells.length; i++) 
+    document.querySelectorAll(`.cr${cells[i][0]}.cc${cells[i][1]}`)[0].classList.add(`highlighted`);
 }
 
-const clearHighlightedSpaces = () => {
+const clearHighlightedCells = () => {
   while (document.querySelectorAll(`.highlighted`).length)
     document.querySelectorAll(`.highlighted`)[0].classList.remove(`highlighted`);
 }
@@ -207,9 +207,9 @@ const clearHighlightedSpaces = () => {
 const cellClick = (event) => {
   const a = +(event.target.a);
   const b = +(event.target.b);
-  clearHighlightedSpaces();
+  clearHighlightedCells();
   if (highlighting.a != a || highlighting.b != b) {
-    highlightSpaces(possibleMoves(a, b));
+    highlightCells(possibleMoves(a, b));
     highlighting.a = a;
     highlighting.b = b;
   } else {
