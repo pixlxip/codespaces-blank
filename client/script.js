@@ -46,7 +46,7 @@ const moved = (p, t) => {
   return hb;
 }
 
-const knightPos = [
+const knightRelativePositions = [
   [1, 2],
   [1, -2],
   [-1, 2],
@@ -57,23 +57,23 @@ const knightPos = [
   [-2, -1]
 ];
 
-const rookPos = [
+const rookRelativePositions = [
   [1, 0],
   [-1, 0],
   [0, 1],
   [0, -1]
 ];
 
-const bishopPos = [
+const bishopRelativePositions = [
   [1, 1],
   [1, -1],
   [-1, 1],
   [-1, -1]
 ];
 
-const queenPos = [...rookPos, ...bishopPos];
+const queenRelativePositions = [...rookPos, ...bishopPos];
 
-const kingPos = [
+const kingRelativePositions = [
   [1, 0],
   [1, 1],
   [1, -1],
@@ -84,8 +84,8 @@ const kingPos = [
   [-1, -1]
 ];
 
-const pawnMoves = (a, b, list, compare, hb, p) => {
-  if (p ? (
+const pawnMoves = (a, b, list, compare, hb, player) => {
+  if (player ? (
     a == 6 &&
     hb[a - 1][b] == NP &&
     hb[a - 2][b] == NP
@@ -94,14 +94,14 @@ const pawnMoves = (a, b, list, compare, hb, p) => {
     hb[a + 1][b] == NP &&
     hb[a + 2][b] == NP
   )) {
-    list.push(p ? [a - 1, b] : [a + 1, b]);
-    list.push(p ? [a - 2, b] : [a + 2, b]);
-  } else if (p ? (hb[a - 1][b] == NP) : (hb[a + 1][b] == NP))
-    list.push(p ? [a - 1, b] : [a + 1, b]);
-  if (compare.includes(p ? hb[a - 1][b - 1] : hb[a + 1][b - 1]))
-    list.push(p ? [a - 1, b - 1] : [a + 1, b - 1]);
-  if (compare.includes(p ? hb[a - 1][b + 1] : hb[a + 1][b + 1]))
-    list.push(p ? [a - 1, b + 1] : [a + 1, b + 1]);
+    list.push(player ? [a - 1, b] : [a + 1, b]);
+    list.push(player ? [a - 2, b] : [a + 2, b]);
+  } else if (player ? (hb[a - 1][b] == NP) : (hb[a + 1][b] == NP))
+    list.push(player ? [a - 1, b] : [a + 1, b]);
+  if (compare.includes(player ? hb[a - 1][b - 1] : hb[a + 1][b - 1]))
+    list.push(player ? [a - 1, b - 1] : [a + 1, b - 1]);
+  if (compare.includes(player ? hb[a - 1][b + 1] : hb[a + 1][b + 1]))
+    list.push(player ? [a - 1, b + 1] : [a + 1, b + 1]);
 }
 
 const knMoves = (a, b, list, compare, hb, pos) => {
@@ -157,37 +157,37 @@ const possibleMoves = (a, b) => {
       pawnMoves(a, b, moves, blacks, board, true);
       break;
     case WR:
-      rbqMoves(a, b, moves, blacks, board, rookPos);
+      rbqMoves(a, b, moves, blacks, board, rookRelativePositions);
       break;
     case WN:
-      knMoves(a, b, moves, [...blacks, NP], board, knightPos);
+      knMoves(a, b, moves, [...blacks, NP], board, knightRelativePositions);
       break;
     case WB:
-      rbqMoves(a, b, moves, blacks, board, bishopPos);
+      rbqMoves(a, b, moves, blacks, board, bishopRelativePositions);
       break;
     case WQ:
-      rbqMoves(a, b, moves, blacks, board, queenPos);
+      rbqMoves(a, b, moves, blacks, board, queenRelativePositions);
       break;
     case WK:
-      knMoves(a, b, moves, [...blacks, NP], board, kingPos);
+      knMoves(a, b, moves, [...blacks, NP], board, kingRelativePositions);
       break;
     case BP:
       pawnMoves(a, b, moves, whites, board, false);
       break;
     case BR:
-      rbqMoves(a, b, moves, whites, board, rookPos);
+      rbqMoves(a, b, moves, whites, board, rookRelativePositions);
       break;
     case BN:
-      knMoves(a, b, moves, [...whites, NP], board, knightPos)
+      knMoves(a, b, moves, [...whites, NP], board, knightRelativePositions);
       break;
     case BB:
-      rbqMoves(a, b, moves, whites, board, bishopPos);
+      rbqMoves(a, b, moves, whites, board, bishopRelativePositions);
       break;
     case BQ:
-      rbqMoves(a, b, moves, whites, board, queenPos);
+      rbqMoves(a, b, moves, whites, board, queenRelativePositions);
       break;
     case BK:
-      knMoves(a, b, moves, [...whites, NP], board, kingPos);
+      knMoves(a, b, moves, [...whites, NP], board, kingRelativePositions);
       break;
   }
   //moves.filter((move) => c4c(whites.includes(tp), moved([a, b], move)));
