@@ -208,7 +208,7 @@ const cellClick = (event) => {
   const a = +(event.target.a);
   const b = +(event.target.b);
   clearHighlightedCells();
-  if (highlighting.a != a || highlighting.b != b) {
+  if ((highlighting.a != a || highlighting.b != b) && board[a][b] != NP) {
     highlightCells(possibleMoves(a, b));
     highlighting.a = a;
     highlighting.b = b;
