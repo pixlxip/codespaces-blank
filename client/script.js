@@ -5,7 +5,6 @@ if (ERUDA) eruda.init();
 const log = DEBUG ? DIV ? (a) => { document.getElementById(`log`).innerText += `\n` + a; } : console.log : () => {};
 
 const table = document.getElementById(`table`);
-const side = `white`
 const [WP, WR, WN, WB, WQ, WK, BP, BR, BN, BB, BQ, BK, NP, WKP, BKP] = [`♙`, `♖`, `♘`, `♗`, `♕`, `♔`, `♟︎`, `♜`, `♞`, `♝`, `♛`, `♚`, ` `, [7, 4], [0, 4]];
 
 const board = [
@@ -16,7 +15,7 @@ const board = [
   [NP, NP, NP, NP, NP, NP, NP, NP],
   [NP, NP, NP, NP, NP, NP, NP, NP],
   [WP, WP, WP, WP, WP, WP, WP, WP],
-  [WR, WN, WB, WQ, WK, WB, WN, WR]
+  [WR, WN, WB, WQ, WK, WB, WN, WR],
 ];
 
 const whites = [WP, WR, WN, WB, WQ, WK];
@@ -26,10 +25,23 @@ const horiW = [WR, WQ];
 const diagB = [BB, BQ];
 const horiB = [BR, BQ];
 
-let highlighting = {
+const highlighting = {
   a: undefined,
   b: undefined,
 };
+let side = `white`;
+const hasMoved = {
+  white: {
+    king: false,
+    leftRook: false,
+    rightRook: false,
+  },
+  black: {
+    king: false,
+    leftRook: false,
+    rightRook: false,
+  },
+}
 
 const isW = (p) => {
   return [WP, WR, WN, WB, WQ, WK].includes(p);
@@ -39,10 +51,10 @@ const isB = (p) => {
   return [BP, BR, BN, BB, BQ, BK].includes(p);
 }
 
-const moved = (p, t) => {
-  const hypotheticalBoard = board.slice();
-  hypotheticalBoard[t[0]][t[1]] = hypotheticalBoard[p[0]][p[1]];
-  hypotheticalBoard[p[0]][p[1]] = NP;
+const moved = (piece, target, sourceBoard) => {
+  const hypotheticalBoard = sourceBoard.slice();
+  hypotheticalBoard[target[0]][target[1]] = hypotheticalBoard[piece[0]][piece[1]];
+  hypotheticalBoard[piece[0]][piece[1]] = NP;
   return hypotheticalBoard;
 }
 
@@ -54,21 +66,21 @@ const knightRelativePositions = [
   [2, 1],
   [2, -1],
   [-2, 1],
-  [-2, -1]
+  [-2, -1],
 ];
 
 const rookRelativePositions = [
   [1, 0],
   [-1, 0],
   [0, 1],
-  [0, -1]
+  [0, -1],
 ];
 
 const bishopRelativePositions = [
   [1, 1],
   [1, -1],
   [-1, 1],
-  [-1, -1]
+  [-1, -1],
 ];
 
 const queenRelativePositions = [...rookRelativePositions, ...bishopRelativePositions];
@@ -81,7 +93,7 @@ const kingRelativePositions = [
   [0, -1],
   [-1, 0],
   [-1, 1],
-  [-1, -1]
+  [-1, -1],
 ];
 
 const pawnMoves = (a, b, list, compare, hypotheticalBoard, player) => {
@@ -105,7 +117,6 @@ const pawnMoves = (a, b, list, compare, hypotheticalBoard, player) => {
 }
 
 const knMoves = (a, b, list, compare, hypotheticalBoard, pos) => {
-  log(compare);
   for (let i = 0; i < pos.length; i++) {
     if (
       a + pos[i][0] >= hypotheticalBoard.length ||
@@ -116,6 +127,52 @@ const knMoves = (a, b, list, compare, hypotheticalBoard, pos) => {
       list.push([a + pos[i][0], b + pos[i][1]]);
     }
   }
+  if (
+    ( // white right-side (short) castle
+      !hasMoved.white.king && // white king has not moved
+      hypotheticalBoard[a][b] == WK && // piece is a white king
+      !hasMoved.white.rightRook && // right rook has not moved
+      hypotheticalBoard[7][5] == NP && // pieces between king and rook are cleared
+      hypotheticalBoard[7][6] == NP && // /
+      c4c(`white`, hypotheticalBoard) && // white is not checked
+      c4c(`white`, moved([7, 4], [7, 5], hypotheticalBoard)) && // white is not in check along the way
+      c4c(`white`, moved([7, 4], [7, 6], hypotheticalBoard))    // /
+    ) || ( // black right-side (short) castle
+      !hasMoved.black.king && // black king has not moved
+      hypotheticalBoard[a][b] == BK && // piece is a black king
+      !hasMoved.black.rightRook && // right rook has not moved
+      hypotheticalBoard[0][5] == NP && // pieces between king and rook are cleared
+      hypotheticalBoard[0][6] == NP && // /
+      c4c(`black`, hypotheticalBoard) && // black is not checked
+      c4c(`black`, moved([0, 4], [0, 5], hypotheticalBoard)) && // black is not in check along the way
+      c4c(`black`, moved([0, 4], [0, 6], hypotheticalBoard))    // /
+    )
+  ) list.push([a, b + 2]);
+  if (
+    ( // white left-side (long) castle
+      !hasMoved.white.king && // white king has not moved
+      hypotheticalBoard[a][b] == WK && // piece is a white king
+      !hasMoved.white.leftRook && // left rook has not moved
+      hypotheticalBoard[7][1] == NP && // \
+      hypotheticalBoard[7][2] == NP && // pieces between king and rook are cleared
+      hypotheticalBoard[7][1] == NP && // /
+      c4c(`white`, hypotheticalBoard) && // white is not checked
+      c4c(`white`, moved([7, 4], [7, 3], hypotheticalBoard)) && // \
+      c4c(`white`, moved([7, 4], [7, 2], hypotheticalBoard)) && // white is not in check along the way
+      c4c(`white`, moved([7, 4], [7, 1], hypotheticalBoard))    // /
+    ) || ( // black left-side (long) castle
+      !hasMoved.black.king && // black king has not moved
+      hypotheticalBoard[a][b] == BK && // piece is a black king
+      !hasMoved.black.leftRook && // left rook has not moved
+      hypotheticalBoard[0][1] == NP && // \
+      hypotheticalBoard[0][2] == NP && // pieces between king and rook are cleared
+      hypotheticalBoard[0][1] == NP && // /
+      c4c(`black`, hypotheticalBoard) && // black is not checked
+      c4c(`black`, moved([0, 4], [0, 3], hypotheticalBoard)) && // \
+      c4c(`black`, moved([0, 4], [0, 2], hypotheticalBoard)) && // black is not in check along the way
+      c4c(`black`, moved([0, 4], [0, 1], hypotheticalBoard))    // /
+    )
+  ) list.push([a, b - 2]);
 }
 
 const rbqMoves = (a, b, list, compare, hypotheticalBoard, pos) => {
@@ -190,7 +247,7 @@ const possibleMoves = (a, b) => {
       knMoves(a, b, moves, [...whites, NP], board, kingRelativePositions);
       break;
   }
-  //moves.filter((move) => c4c(whites.includes(targetPiece), moved([a, b], move)));
+  //moves.filter((move) => c4c(whites.includes(targetPiece), moved([a, b], move, board)));
   return moves;
 };
 
