@@ -133,9 +133,9 @@ const knMoves = (a, b, list, compare, hypotheticalBoard, pos) => {
     !hasMoved.white.rightRook, // right rook has not moved
     hypotheticalBoard[7][5] == NP, // pieces between king and rook are cleared
     hypotheticalBoard[7][6] == NP, // /
-    !c4c(`white`, hypotheticalBoard), // white is not checked
-    !c4c(`white`, moved([7, 4], [7, 5], hypotheticalBoard)), // white is not in check along the way
-    !c4c(`white`, moved([7, 4], [7, 6], hypotheticalBoard))
+    !checkForCheck(`white`, hypotheticalBoard), // white is not checked
+    !checkForCheck(`white`, moved([7, 4], [7, 5], hypotheticalBoard)), // white is not in check along the way
+    !checkForCheck(`white`, moved([7, 4], [7, 6], hypotheticalBoard))
   ]);
   if (
     ( // white right-side (short) castle
@@ -144,18 +144,18 @@ const knMoves = (a, b, list, compare, hypotheticalBoard, pos) => {
       !hasMoved.white.rightRook && // right rook has not moved
       hypotheticalBoard[7][5] == NP && // pieces between king and rook are cleared
       hypotheticalBoard[7][6] == NP && // /
-      !c4c(`white`, hypotheticalBoard) && // white is not checked
-      !c4c(`white`, moved([7, 4], [7, 5], hypotheticalBoard)) && // white is not in check along the way
-      !c4c(`white`, moved([7, 4], [7, 6], hypotheticalBoard))    // /
+      !checkForCheck(`white`, hypotheticalBoard) && // white is not checked
+      !checkForCheck(`white`, moved([7, 4], [7, 5], hypotheticalBoard)) && // white is not in check along the way
+      !checkForCheck(`white`, moved([7, 4], [7, 6], hypotheticalBoard))    // /
     ) || ( // black right-side (short) castle
       !hasMoved.black.king && // black king has not moved
       hypotheticalBoard[a][b] == BK && // piece is a black king
       !hasMoved.black.rightRook && // right rook has not moved
       hypotheticalBoard[0][5] == NP && // pieces between king and rook are cleared
       hypotheticalBoard[0][6] == NP && // /
-      !c4c(`black`, hypotheticalBoard) && // black is not checked
-      !c4c(`black`, moved([0, 4], [0, 5], hypotheticalBoard)) && // black is not in check along the way
-      !c4c(`black`, moved([0, 4], [0, 6], hypotheticalBoard))    // /
+      !checkForCheck(`black`, hypotheticalBoard) && // black is not checked
+      !checkForCheck(`black`, moved([0, 4], [0, 5], hypotheticalBoard)) && // black is not in check along the way
+      !checkForCheck(`black`, moved([0, 4], [0, 6], hypotheticalBoard))    // /
     )
   ) list.push([a, b + 2]);
   if (
@@ -166,10 +166,10 @@ const knMoves = (a, b, list, compare, hypotheticalBoard, pos) => {
       hypotheticalBoard[7][1] == NP && // \
       hypotheticalBoard[7][2] == NP && // pieces between king and rook are cleared
       hypotheticalBoard[7][1] == NP && // /
-      !c4c(`white`, hypotheticalBoard) && // white is not checked
-      !c4c(`white`, moved([7, 4], [7, 3], hypotheticalBoard)) && // \
-      !c4c(`white`, moved([7, 4], [7, 2], hypotheticalBoard)) && // white is not in check along the way
-      !c4c(`white`, moved([7, 4], [7, 1], hypotheticalBoard))    // /
+      !checkForCheck(`white`, hypotheticalBoard) && // white is not checked
+      !checkForCheck(`white`, moved([7, 4], [7, 3], hypotheticalBoard)) && // \
+      !checkForCheck(`white`, moved([7, 4], [7, 2], hypotheticalBoard)) && // white is not in check along the way
+      !checkForCheck(`white`, moved([7, 4], [7, 1], hypotheticalBoard))    // /
     ) || ( // black left-side (long) castle
       !hasMoved.black.king && // black king has not moved
       hypotheticalBoard[a][b] == BK && // piece is a black king
@@ -177,10 +177,10 @@ const knMoves = (a, b, list, compare, hypotheticalBoard, pos) => {
       hypotheticalBoard[0][1] == NP && // \
       hypotheticalBoard[0][2] == NP && // pieces between king and rook are cleared
       hypotheticalBoard[0][1] == NP && // /
-      !c4c(`black`, hypotheticalBoard) && // black is not checked
-      !c4c(`black`, moved([0, 4], [0, 3], hypotheticalBoard)) && // \
-      !c4c(`black`, moved([0, 4], [0, 2], hypotheticalBoard)) && // black is not in check along the way
-      !c4c(`black`, moved([0, 4], [0, 1], hypotheticalBoard))    // /
+      !checkForCheck(`black`, hypotheticalBoard) && // black is not checked
+      !checkForCheck(`black`, moved([0, 4], [0, 3], hypotheticalBoard)) && // \
+      !checkForCheck(`black`, moved([0, 4], [0, 2], hypotheticalBoard)) && // black is not in check along the way
+      !checkForCheck(`black`, moved([0, 4], [0, 1], hypotheticalBoard))    // /
     )
   ) list.push([a, b - 2]);
 }
@@ -204,7 +204,7 @@ const rbqMoves = (a, b, list, compare, hypotheticalBoard, pos) => {
   }
 };
 
-const c4c = (p, hypotheticalBoard) => {
+const checkForCheck = (p, hypotheticalBoard) => {
   
   return false;
 }
@@ -257,7 +257,7 @@ const possibleMoves = (a, b) => {
       knMoves(a, b, moves, [...whites, NP], board, kingRelativePositions);
       break;
   }
-  //moves.filter((move) => c4c(whites.includes(targetPiece), moved([a, b], move, board)));
+  //moves.filter((move) => checkForCheck(whites.includes(targetPiece), moved([a, b], move, board)));
   return moves;
 };
 
